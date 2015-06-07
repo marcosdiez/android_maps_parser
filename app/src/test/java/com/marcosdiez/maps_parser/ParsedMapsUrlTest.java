@@ -5,10 +5,21 @@ package com.marcosdiez.maps_parser;
  */
 public class ParsedMapsUrlTest {
 
+
+    @org.junit.Test
+    public void testInternetUrlsWithCid() throws Exception {
+        String expected = "http://maps.google.com/maps?q=45.814771999999998,15.974068000000001";
+        String parsed = InternetUrl.getCidCoordinates("10083010587172303116");
+        org.junit.Assert.assertEquals(expected, parsed);
+    }
+
     @org.junit.Test
     public void testInternetUrl() throws Exception {
-        //45°49'45.9"N 15°58'41.5"E
-        testHelper("http://goo.gl/maps/vL3w1", "45.829415", "15.978208");
+        testHelper("http://goo.gl/maps/vL3w1", "45.829415", "15.978208");    // this is easy
+
+        // these two can not be tested because it uses android native methods... blerg...
+        // testHelper("http://maps.google.com/?cid=10083010587172303116&hl=en&gl=us" , "45.814771999999998","15.974068000000001");
+        // testHelper("http://goo.gl/maps/e6rdH" , "45.814771999999998","15.974068000000001");
     }
 
     @org.junit.Test
@@ -50,7 +61,7 @@ public class ParsedMapsUrlTest {
 
     private void testHelper(String url, String latitude, String longitude) {
         ParsedMapsUrl p = new ParsedMapsUrl(url);
-        if(p.needsInternet()){
+        if (p.needsInternet()) {
             p.resolveInternetUrl();
         }
         //   org.junit.Assert.assertEquals(30, 30);

@@ -46,7 +46,7 @@ public class ParsedMapsUrl {
                 parseIngressUrl(url);
                 return;
             }
-            if (hostName.contains("goo.gl")) {
+            if (hostName.contains("goo.gl") || url.contains("cid=")) {
                 parseGooGlUrl(theUrl);
                 return;
             }
