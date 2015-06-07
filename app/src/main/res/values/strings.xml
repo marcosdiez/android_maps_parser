@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Maps Parser</string>
-    <string name="please_wait">Please Wait. Resolving URL...</string>
+    <string name="please_wait">Please Wait. Resolving URL&#8230;</string>
     <string name="intent_not_received">ERROR: Intent not received</string>
     <string name="intent_contains_not_data">ERROR: Intent contains no data</string>
     <string name="choose_your_maps_app">Please choose which Maps app you want to use:</string>

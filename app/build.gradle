@@ -6,8 +6,8 @@ android {
 
     defaultConfig {
         applicationId "com.marcosdiez.maps_parser"
-        minSdkVersion 1
-        targetSdkVersion 21
+        minSdkVersion 4
+        targetSdkVersion 22
         versionCode 1
         versionName "1.0"
     }
