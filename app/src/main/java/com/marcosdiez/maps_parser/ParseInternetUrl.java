@@ -13,45 +13,77 @@ import java.net.URL;
 /**
  * Created by Marcos on 07-Jun-15.
  */
-public class InternetUrl {
+public class ParseInternetUrl {
 
     final private String TAG = "InternetUrl";
-    URL url = null;
+//    ParseStaticUrl parsedUrl = null;
+//
+//    public ParseInternetUrl(ParseStaticUrl parsedUrl) {
+//        this.parsedUrl = parsedUrl;
+//    }
+//
+//    public ParseStaticUrl resolve() {
+//        System.out.println("Resolving URL in the Internet");
+//
+//        try {
+//            while (!parsedUrl.hasValue()) {
+//                URL location = resolveUrl(parsedUrl.getUrl());
+//                parsedUrl = new ParseStaticUrl(location);
+//            }
+//            return parsedUrl;
+//
+//        } catch (java.io.IOException e) {
+//            return null;
+//            //throw new InvalidParameterException(url.toString());
+//        }
+//    }
 
-    public InternetUrl(URL theUrl) {
-        this.url = theUrl;
-    }
-
-    public String resolve() {
-        try {
-            String location = resolveUrl(url);
-            return location;
-        } catch (java.io.IOException e) {
-            return null;
-            //throw new InvalidParameterException(url.toString());
+    public static URL resolveUrl(URL theUrl) throws IOException {
+        String theUrlString = theUrl.toString();
+        if (theUrl.getHost().equals("goo.gl")) {
+            return new URL(resolveGogGlUrl(theUrl));
         }
+        if (theUrlString.contains("cid=")) {
+            return new URL(getCidCoordinatesFromUrl(theUrlString));
+        }
+        theUrlString = theUrlString.replace("http://", "https://");
+        String json_output = "&output=json";
+        if (!theUrlString.contains(json_output)) {
+            theUrlString += json_output;
+        }
+
+        return new URL(getCoordinatesFromGoogle(theUrlString));
+
     }
 
-    private String resolveUrl(URL theUrl) throws IOException {
+    private static String resolveGogGlUrl(URL theUrl) throws IOException {
+        System.out.println("resolveGogGlUrl");
         HttpURLConnection con = (HttpURLConnection) (theUrl.openConnection());
         con.setInstanceFollowRedirects(false);
         con.connect();
         String location = con.getHeaderField("Location");
-        if (location.indexOf("cid=") >= 0) {
-            location = getCidCoordinatesFromUrl(location);
-        }
         return location;
     }
 
+
     private static String getCidCoordinatesFromUrl(String url) throws IOException {
+        System.out.println("getCidCoordinatesFromUrl");
         Uri newUri = Uri.parse(url);
         String cid = newUri.getQueryParameter("cid");
-        return getCidCoordinates(cid);
+        return getCoodinatesFromCid(cid);
     }
 
-    public static String getCidCoordinates(String cid) throws IOException {
-        // http://stackoverflow.com/questions/23968937/android-convert-cid-location-to-coordinates
+    public static String getCoodinatesFromCid(String cid) throws IOException {
+        System.out.println("getCoodinatesFromCid");
         final String URL_FORMAT = "https://maps.google.com/maps?cid=%s&q=a&output=json";
+        String theUrl = String.format(URL_FORMAT, cid);
+        return getCoordinatesFromGoogle(theUrl);
+    }
+
+    private static String getCoordinatesFromGoogle(String theUrl) throws IOException {
+        // http://stackoverflow.com/questions/23968937/android-convert-cid-location-to-coordinates
+        System.out.println("getCoordinatesFromGoogle: " + theUrl);
+
         final String LATLNG_BEFORE = "viewport:{center:{";
         final String LATLNG_AFTER = "}";
         final String LATLNG_SEPARATOR = ",";
@@ -59,7 +91,8 @@ public class InternetUrl {
         final String LNG_PREFIX = "lng:";
 
         try {
-            String theUrl = String.format(URL_FORMAT, cid);
+
+
             URL theURL = new URL(theUrl);
             HttpURLConnection urlConnection = null;
             StringBuilder total = new StringBuilder();
@@ -78,6 +111,7 @@ public class InternetUrl {
             }
 
             String text = total.toString();
+
             int startIndex = text.indexOf(LATLNG_BEFORE);
             if (startIndex == -1)
                 return null;

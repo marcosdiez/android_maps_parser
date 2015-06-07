@@ -12,12 +12,15 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+
 
 public class MainActivity extends Activity {
 
 
     final static String TAG = "MAPS_PARSER";
-    public static ParsedMapsUrl theData = null;
+    public static ParseUrl theData = null;
     public static Activity theActivity = null;
 
     final static String yadex_package_name = "ru.yandex.yandexmaps";
@@ -71,11 +74,15 @@ public class MainActivity extends Activity {
             return;
         }
         Log.d(TAG, "Received URL:" + data);
-        ParsedMapsUrl parsedData = new ParsedMapsUrl(data);
-        if (parsedData.needsInternet()) {
-            processInternetIntent(parsedData);
-        } else {
-            openGpsUrl(parsedData);
+        try {
+            ParseUrl parsedData = new ParseUrl(data);
+            if (parsedData.needsInternet()) {
+                processInternetIntent(parsedData);
+            } else {
+                openGpsUrl(parsedData);
+            }
+        } catch (MalformedURLException m) {
+            Toast.makeText(this, "Invalid URL " + data, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -85,7 +92,7 @@ public class MainActivity extends Activity {
 
     TextView textViewId = null;
 
-    void processInternetIntent(ParsedMapsUrl theDataX) {
+    void processInternetIntent(ParseUrl theDataX) {
         setContentView(R.layout.activity_main);
         textViewId = ((TextView) findViewById(R.id.textview_id));
         textViewId.setText(theDataX.getUrl());
@@ -94,15 +101,18 @@ public class MainActivity extends Activity {
 
     }
 
-    class ProcessUrlInBackground extends AsyncTask<ParsedMapsUrl, Void, ParsedMapsUrl> {
+    class ProcessUrlInBackground extends AsyncTask<ParseUrl, Void, ParseUrl> {
         @Override
-        protected ParsedMapsUrl doInBackground(ParsedMapsUrl... theDataX) {
-            theDataX[0].resolveInternetUrl();
+        protected ParseUrl doInBackground(ParseUrl... theDataX) {
+            try {
+                theDataX[0].resolveInternetUrl();
+            } catch (IOException x) {
+            }
             return theDataX[0];
         }
 
         @Override
-        protected void onPostExecute(ParsedMapsUrl theDataX) {
+        protected void onPostExecute(ParseUrl theDataX) {
             if (theDataX.hasValue()) {
                 ((TextView) findViewById(R.id.textview_result)).setText(theDataX.getUrl());
                 openGpsUrl(theDataX);
@@ -114,7 +124,7 @@ public class MainActivity extends Activity {
     }
 
 
-    void openGpsUrl(ParsedMapsUrl theDataX) {
+    void openGpsUrl(ParseUrl theDataX) {
 
 
         Log.d(TAG, yadex_package_name + ": " + (appInstalledOrNot(yadex_package_name) ? "true" : "false"));

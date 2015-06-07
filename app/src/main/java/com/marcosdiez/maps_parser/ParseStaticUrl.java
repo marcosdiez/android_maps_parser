@@ -2,7 +2,6 @@ package com.marcosdiez.maps_parser;
 
 import android.util.Log;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -10,63 +9,37 @@ import java.util.regex.Pattern;
 /**
  * Created by Marcos on 07-Jun-15.
  */
-public class ParsedMapsUrl {
+public class ParseStaticUrl {
 
     final static String TAG = "ParsedMapsUrl";
     final static Pattern mapsRegEx = Pattern.compile("(-?\\d+(\\.\\d+)?),(-?\\d+(\\.\\d+)?)");
 
     String latitude = null;
     String longitude = null;
-    String the_url = null;
+    URL the_url = null;
 
-    InternetUrl internetUrl = null;
+    ParseInternetUrl parseInternetUrl = null;
 
     public boolean hasValue() {
         return latitude != null && longitude != null;
     }
 
-    public boolean needsInternet() {
-        return internetUrl != null;
-    }
-
-    public String getUrl() {
+    public URL getUrl() {
         return the_url;
     }
 
-    public ParsedMapsUrl(String url) {
+    public ParseStaticUrl(URL url) {
         if (url == null) {
-            throw new IllegalArgumentException(url);
+            throw new IllegalArgumentException("url is null");
         }
         this.the_url = url;
-        try {
-            URL theUrl = new URL(url);
-            String hostName = theUrl.getHost();
+        String hostName = url.getHost();
 
-            if (hostName.contains("ingress.com")) {
-                parseIngressUrl(url);
-                return;
-            }
-            if (hostName.contains("goo.gl") || url.contains("cid=")) {
-                parseGooGlUrl(theUrl);
-                return;
-            }
-        } catch (MalformedURLException m) {
+        if (hostName.contains("ingress.com")) {
+            parseIngressUrl(url.toString());
+            return;
         }
-        parseUrl(url);
-    }
-
-    private void parseGooGlUrl(URL theUrl) {
-        internetUrl = new InternetUrl(theUrl);
-    }
-
-    public void resolveInternetUrl() {
-        if (needsInternet()) {
-            String url = internetUrl.resolve();
-            if (url != null) {
-                the_url = url;
-                parseUrl(url);
-            }
-        }
+        parseUrl(url.toString());
     }
 
     private void parseIngressUrl(String url) {
