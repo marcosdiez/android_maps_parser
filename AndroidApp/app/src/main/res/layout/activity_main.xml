@@ -1,0 +1,25 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical"
+              tools:context=".android.MainActivity">
+
+   <TextView
+       android:layout_width="fill_parent"
+       android:layout_height="fill_parent"
+       android:text="@string/please_wait"/>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/textview_id"
+        android:text=""/>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/textview_result"
+        android:text=""/>
+
+</LinearLayout>
