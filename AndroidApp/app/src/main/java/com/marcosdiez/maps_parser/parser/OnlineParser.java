@@ -20,6 +20,7 @@ public class OnlineParser {
     private String normalizedUrl = null;
 
     public OnlineParser() {
+        MdLogger.say("------------------");
     }
 
     public String getUrl() {
@@ -52,10 +53,9 @@ public class OnlineParser {
     }
 
     public boolean parseOffline(String url) throws MalformedURLException {
-        MdLogger.say("Parsing URL: " + url);
+        MdLogger.say("Parsing URL: [" + url +"]");
         this.theUrl = url;
         UrlParser urlParser = new UrlParser();
-
         urlParser.parse(url);
 
         if (urlParser.hasValue()) {
@@ -72,15 +72,18 @@ public class OnlineParser {
     }
 
     private boolean parseUrlOnline(String url) throws IOException {
+        MdLogger.say("Fetching URL to parse it's contents...");
         URL aUrl = new URL(url);
         HttpURLConnection conn = (HttpURLConnection) (aUrl.openConnection());
         conn.setInstanceFollowRedirects(false);
         conn.connect();
         String location = conn.getHeaderField("Location");
+        if(location == null){
+            location = conn.getHeaderField("location"); // HTTP2
+        }
         if (location != null) {
             return parse(location);
         }
-
         return parseUrlContent(conn);
     }
 

@@ -4,7 +4,7 @@ import com.marcosdiez.maps_parser.parser.LineParser;
 import com.marcosdiez.maps_parser.parser.OnlineParser;
 import com.marcosdiez.maps_parser.parser.UrlParser;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import java.io.IOException;
 
@@ -15,6 +15,7 @@ public class UrlParserTest {
 
     @org.junit.Test
     public void testInternetUrl() throws Exception {
+        MdLogger.say("Java Version: " + System.getProperty("java.version"));
         testUrlHelper("http://goo.gl/maps/vL3w1", "45.829415", "15.978208");    // this is easy
         testUrlHelper("http://goo.gl/maps/4SGx", "48.209953", "16.4261");    // this is easy
 
@@ -42,6 +43,10 @@ public class UrlParserTest {
     @org.junit.Test
     public void testOfflineUrls() throws Exception {
 
+        testUrlHelper("https://www.google.com/maps/search/?api=1&query=England%2c+United+Kingdom&center=52.77146932915935%2c-1.6809082031249951&vdpId=10270&ppois=52.77146932915935_-1.6809082031249951_England%2c+United+Kingdom",
+        "52.77146932915935", "-1.6809082031249951");
+        testUrlHelper("https://www.google.com/maps/dir/?api=1&travelmode=&origin=Current%20Location&destination=-31.95363998413086%2c115.8572006225586",
+                "-31.95363998413086","115.8572006225586");
         testUrlHelper("http://www.google.com/maps?q=10.11,12.13", "10.11", "12.13");
         testUrlHelper("http://www.google.com/maps?q=10.11,-12.13", "10.11", "-12.13");
         testUrlHelper("http://www.google.com/maps?q=-10.11,12.13", "-10.11", "12.13");
@@ -74,6 +79,22 @@ public class UrlParserTest {
         UrlParser urlParser = new UrlParser();
         urlParser.parse("https://www.google.com");
         Assert.assertEquals(false, urlParser.hasValue());
+    }
+
+    @org.junit.Test
+    public void testUrlParser() throws Exception {
+        UrlParser urlParser = new UrlParser();
+        urlParser.parse("https://www.google.com/maps/dir/?api=1&travelmode=&origin=CurrentLocation&destination=-31.95363998413086,115.8572006225586");
+        Assert.assertEquals(true, urlParser.hasValue());
+        Assert.assertEquals("-31.95363998413086", urlParser.getLatitude());
+        Assert.assertEquals("115.8572006225586", urlParser.getLongitude());
+
+        urlParser = new UrlParser();
+        urlParser.parse("https://www.google.com/maps/dir/?api=1&travelmode=&origin=CurrentLocation&destination=-31.95363998413086%2c115.8572006225586");
+        Assert.assertEquals(true, urlParser.hasValue());
+        Assert.assertEquals("-31.95363998413086", urlParser.getLatitude());
+        Assert.assertEquals("115.8572006225586", urlParser.getLongitude());
+
     }
 
     private void testUrlHelper(String url) throws IOException {

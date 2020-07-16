@@ -1,7 +1,9 @@
 package com.marcosdiez.maps_parser.parser;
 
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,6 +33,13 @@ public class UrlParser implements HasLatLongInterface {
             url = url.replace("waze://", "http://waze.com/");
         }
         normalizedUrl = url;
+        // the DECODED URL is just for us to parse a regex. It should not become a "normalized URL"
+        try {
+            url = URLDecoder.decode(url, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // if we can't support UTF-8, then the world is on fire...
+            // throw new IllegalArgumentException("url is null");
+        }
         URL theUrl = new URL(url);
         String hostName = theUrl.getHost();
 
