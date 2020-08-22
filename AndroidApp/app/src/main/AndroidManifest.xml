@@ -2646,9 +2646,11 @@
                 <data android:host="www.google.ws" android:pathPrefix="/maps/me"/>
 
                 <data android:host="ingress.com" android:pathPrefix="/intel"/>
+                <data android:host="intel.ingress.com" android:pathPrefix="/"/>
                 <data android:host="www.ingress.com" android:pathPrefix="/intel"/>
 
                 <data android:host="maps.yandex.com" android:pathPrefix="/" />
+                <data android:host="yandex.com" android:pathPrefix="/maps/" />
 
             </intent-filter>
 
